@@ -3,7 +3,6 @@ export default {
     const url = new URL(request.url);
     const targetUrlString = url.searchParams.get('url');
 
-    // ✅ Perbaikan: if (!targetUrlString) { ... }
     if (!targetUrlString) {
       return new Response('Error: Missing ?url= parameter', { status: 400 });
     }
@@ -15,10 +14,14 @@ export default {
       return new Response('Error: Invalid URL in ?url=', { status: 400 });
     }
 
+    // 🎯 MODIFIKASI UTAMA: Ganti User-Agent agar dianggap Firefox
     const headers = new Headers(request.headers);
+    headers.set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0');
     
-    // 🔑 Paksa format JPEG/WEBP untuk hindari AVIF
+    // Paksa format gambar JPEG/WebP (opsional, tapi aman)
     headers.set('Accept', 'image/jpeg,image/jpg,image/png,image/webp,image/gif;q=0.9,*/*;q=0.5');
+
+    // Hapus header yang bisa mengungkapkan identitas proxy
     headers.delete('CF-Connecting-IP');
     headers.delete('X-Forwarded-For');
     headers.delete('X-Real-IP');
